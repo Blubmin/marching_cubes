@@ -6,19 +6,18 @@
 
 using namespace std;
 
-static void error_callback(int error, const char* description)
-{
+
+
+static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void run()
-{
+void run() {
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
@@ -71,14 +70,11 @@ void run()
     glfwTerminate();
 }
 
-int main(int argc, char** argv)
-{
-    try
-    {
+int main(int argc, char** argv) {
+    try {
         run();
     }
-    catch (const exception& e)
-    {
+    catch (const exception& e) {
         char temp;
         cerr << e.what() << endl;
         cin >> temp;
