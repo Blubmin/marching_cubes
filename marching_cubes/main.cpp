@@ -7,9 +7,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "MatrixStack.h"
 #include "Program.h"
 
 using namespace std;
+
+GLFWwindow* window;
 
 Program prog;
 
@@ -22,12 +25,16 @@ vector<glm::vec3> verts;
 vector<glm::vec3> norms;
 vector<GLuint> elements;
 
-glm::mat4 P;
+MatrixStack M;
+MatrixStack V;
+MatrixStack P;
 
 void render() {
     glUseProgram(prog.prog);
 
-    glUniformMatrix4fv(prog.getUniformHandle("P"), 1, GL_FALSE, glm::value_ptr(P));
+    glUniformMatrix4fv(prog.getUniformHandle("M"), 1, GL_FALSE, glm::value_ptr(M.topMatrix()));
+    glUniformMatrix4fv(prog.getUniformHandle("V"), 1, GL_FALSE, glm::value_ptr(V.topMatrix()));
+    glUniformMatrix4fv(prog.getUniformHandle("P"), 1, GL_FALSE, glm::value_ptr(P.topMatrix()));
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, elements.size() / 3);
@@ -52,9 +59,23 @@ void march() {
 }
 
 void init() {
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    float aspect = width / (float)height;
+
     prog = Program("./vert.glsl", "./frag.glsl");
     march();
-    P = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -2.0f, 100.0f);
+
+    M = MatrixStack();
+    M.pushMatrix();
+
+    V = MatrixStack();
+    V.pushMatrix();
+    V.lookAt(vec3(0, 0, -5), vec3(0), vec3(0, 1, 0));
+
+    P = MatrixStack();
+    P.pushMatrix();
+    P.ortho(-1, 1, -1, 1, -1, 1);
 
     glGenBuffers(1, &VAO);
     glBindVertexArray(VAO);
@@ -74,6 +95,9 @@ void init() {
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+
+    int size;
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -100,7 +124,7 @@ void run() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Marching Cubes", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Marching Cubes", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
