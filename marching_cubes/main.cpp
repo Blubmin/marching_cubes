@@ -1,12 +1,84 @@
 #include <iostream>
+#include <vector>
 
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "Program.h"
 
 using namespace std;
 
+Program prog;
 
+GLuint VAO;
+GLuint VBO;
+GLuint VBO_vert;
+GLuint VBO_norm;
+
+vector<glm::vec3> verts;
+vector<glm::vec3> norms;
+vector<GLuint> elements;
+
+glm::mat4 P;
+
+void render() {
+    glUseProgram(prog.prog);
+
+    glUniformMatrix4fv(prog.getUniformHandle("P"), 1, GL_FALSE, glm::value_ptr(P));
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, elements.size() / 3);
+    glBindVertexArray(0);
+
+    glUseProgram(0);
+}
+
+void march() {
+    verts = vector<glm::vec3>();
+    verts.push_back(glm::vec3(-0.5f, -0.5f, 0.0f));
+    verts.push_back(glm::vec3(0.5f, -0.5f, 0.0f));
+    verts.push_back(glm::vec3(0.0f, 0.7f, 0.0f));
+    norms = vector<glm::vec3>();
+    norms.push_back(glm::vec3());
+    norms.push_back(glm::vec3());
+    norms.push_back(glm::vec3());
+    elements = vector<GLuint>();
+    elements.push_back(0);
+    elements.push_back(1);
+    elements.push_back(2);
+}
+
+void init() {
+    prog = Program("./vert.glsl", "./frag.glsl");
+    march();
+    P = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -2.0f, 100.0f);
+
+    glGenBuffers(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO_vert);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_vert);
+    glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(glm::vec3), &verts[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glGenBuffers(1, &VBO_norm);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_norm);
+    glBufferData(GL_ARRAY_BUFFER, norms.size() * sizeof(glm::vec3), &norms[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
 
 static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
@@ -49,6 +121,8 @@ void run() {
 
     //glfwSwapInterval(1);
 
+    init();
+
     glClearColor(0.95f, 0.95f, 0.95f, 1.0f);
 
     double oldTime = glfwGetTime();
@@ -62,6 +136,7 @@ void run() {
         double timeElapsed = newTime - oldTime;
 
         oldTime = newTime;
+        render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -115,7 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="frag.glsl" />
     <None Include="packages.config" />
+    <None Include="vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLSL.cpp" />
