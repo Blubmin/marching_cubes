@@ -131,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSL.h" />
+    <ClInclude Include="LookupTables.h" />
     <ClInclude Include="MatrixStack.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="tiny_obj_loader.h" />

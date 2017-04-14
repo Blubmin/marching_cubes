@@ -49,5 +49,8 @@
     <ClInclude Include="tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LookupTables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

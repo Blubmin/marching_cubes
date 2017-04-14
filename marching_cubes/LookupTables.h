@@ -2,15 +2,6 @@
 #ifndef _LookupTables_H_
 #define _LookupTables_H_
 
-typedef struct {
-	glm:vec3 p[3];
-} TRIANGLE;
-
-typedef struct {
-	glm:vec3 p[8];
-	double val[8];
-} GRIDCELL;
-
 int edgeTable[256] = {
 	0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 	0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,

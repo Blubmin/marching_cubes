@@ -13,7 +13,7 @@
 #include "MatrixStack.h"
 #include "Program.h"
 
-#define GRID_SIZE 32
+#define GRID_SIZE 16
 #define HALF_GRID GRID_SIZE / 2
 #define VOX_VERTS 8
 #define EDGE_VERTS 12
