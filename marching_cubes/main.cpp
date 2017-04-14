@@ -150,7 +150,7 @@ vec3 * interpolate(pt3 p1, pt3 p2, vec3* ret) {
         ret[1] = norm2;
         return ret;
     }*/
-    mu = -val1 / (val2 - val1);
+    mu = (isovalue - val1) / (val2 - val1);
     ret[0].x = p1.x + mu * (p2.x - p1.x);
     ret[0].y = p1.y + mu * (p2.y - p1.y);
     ret[0].z = p1.z + mu * (p2.z - p1.z);
@@ -164,14 +164,14 @@ void compute_tris() {
             for (int z = -HALF_GRID; z < HALF_GRID - 1; z++) {
                 int idx = 0;
                 Voxel vox = get_voxel(x, y, z);
-                idx |= value_at(vox.verts[0]) < 0 ? 1 << 0 : 0;
-                idx |= value_at(vox.verts[1]) < 0 ? 1 << 1 : 0;
-                idx |= value_at(vox.verts[2]) < 0 ? 1 << 2 : 0;
-                idx |= value_at(vox.verts[3]) < 0 ? 1 << 3 : 0;
-                idx |= value_at(vox.verts[4]) < 0 ? 1 << 4 : 0;
-                idx |= value_at(vox.verts[5]) < 0 ? 1 << 5 : 0;
-                idx |= value_at(vox.verts[6]) < 0 ? 1 << 6 : 0;
-                idx |= value_at(vox.verts[7]) < 0 ? 1 << 7 : 0;
+                idx |= value_at(vox.verts[0]) < isovalue ? 1 << 0 : 0;
+                idx |= value_at(vox.verts[1]) < isovalue ? 1 << 1 : 0;
+                idx |= value_at(vox.verts[2]) < isovalue ? 1 << 2 : 0;
+                idx |= value_at(vox.verts[3]) < isovalue ? 1 << 3 : 0;
+                idx |= value_at(vox.verts[4]) < isovalue ? 1 << 4 : 0;
+                idx |= value_at(vox.verts[5]) < isovalue ? 1 << 5 : 0;
+                idx |= value_at(vox.verts[6]) < isovalue ? 1 << 6 : 0;
+                idx |= value_at(vox.verts[7]) < isovalue ? 1 << 7 : 0;
 
                 vec3 vertList[EDGE_VERTS][2];
 
