@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <GL\glew.h>
@@ -7,8 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "GLSL.h"
 #include "MatrixStack.h"
 #include "Program.h"
+#include "tiny_obj_loader.h"
 
 using namespace std;
 
@@ -37,25 +40,33 @@ void render() {
     glUniformMatrix4fv(prog.getUniformHandle("P"), 1, GL_FALSE, glm::value_ptr(P.topMatrix()));
 
     glBindVertexArray(VAO);
+
     glDrawArrays(GL_TRIANGLES, 0, elements.size() / 3);
+
     glBindVertexArray(0);
 
     glUseProgram(0);
 }
 
 void march() {
-    verts = vector<glm::vec3>();
-    verts.push_back(glm::vec3(-0.5f, -0.5f, 0.0f));
-    verts.push_back(glm::vec3(0.5f, -0.5f, 0.0f));
-    verts.push_back(glm::vec3(0.0f, 0.7f, 0.0f));
+    tinyobj::attrib_t attr;
+    vector<tinyobj::shape_t> shapes;
+    vector<tinyobj::material_t> mats;
+
+    string err;
+
+    tinyobj::LoadObj(&attr, &shapes, &mats, &err, "cube.obj");
+
+    verts = attr.vertices;
+
     norms = vector<glm::vec3>();
-    norms.push_back(glm::vec3());
-    norms.push_back(glm::vec3());
-    norms.push_back(glm::vec3());
-    elements = vector<GLuint>();
-    elements.push_back(0);
-    elements.push_back(1);
-    elements.push_back(2);
+    for (int i = 0; i < verts.size(); i += 3) {
+        norms.push_back(glm::vec3());
+    }
+    elements = vector<int>();
+    for (int i = 0; i < shapes[0].mesh.indices.size(); i++) {
+        elements.push_back(shapes[0].mesh.indices[i].vertex_index);
+    }
 }
 
 void init() {
@@ -75,9 +86,9 @@ void init() {
 
     P = MatrixStack();
     P.pushMatrix();
-    P.ortho(-1, 1, -1, 1, -1, 1);
+    P.perspective(45, aspect, .1, 1000);
 
-    glGenBuffers(1, &VAO);
+    glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
     glGenBuffers(1, &VBO_vert);
@@ -95,9 +106,6 @@ void init() {
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
-
-    int size;
-    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

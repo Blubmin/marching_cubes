@@ -76,6 +76,11 @@ void MatrixStack::ortho(float left, float right, float bottom, float top, float 
     ctm *= glm::ortho(left, right, bottom, top, zNear, zFar);
 }
 
+void MatrixStack::perspective(float fovy, float aspect, float zNear, float zFar) {
+    mat4 &ctm = mstack->top();
+    ctm *= glm::perspective(fovy, aspect, zNear, zFar);
+}
+
 void MatrixStack::frustum(float left, float right, float bottom, float top, float zNear, float zFar)
 {
     mat4 &ctm = mstack->top();
