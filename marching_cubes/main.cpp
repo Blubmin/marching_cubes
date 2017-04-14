@@ -103,7 +103,8 @@ Voxel get_voxel(int x, int y, int z) {
 }
 
 double data_function(double x, double y, double z) {
-    return x*x + y*y + z*z - 2500;
+    return .003 * z*z - cos(.1*3.14*sqrt(x*x + y*y));
+    // return x*x + y*y + z*z - 2500;
     // return cos(2 * 3.14*sqrt(x*x + y*y)) - z * 1;
     // return -abs(10 - sqrt(x*x + y*y)) + 2;
 }
