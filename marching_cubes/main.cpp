@@ -44,8 +44,18 @@ MatrixStack M;
 MatrixStack V;
 MatrixStack P;
 
+int function;
 float isovalue;
 float time_elapsed;
+bool pause;
+float cam_dist;
+
+float min_max[][2] = {
+    {-.5, 5},
+    {-1000, 2000},
+    {-6, 1},
+    {-20, 20}
+};
 
 struct pt_data {
     double value;
@@ -79,7 +89,12 @@ pt_data values[GRID_SIZE][GRID_SIZE][GRID_SIZE];
 void render() {
     glUseProgram(prog.prog);
 
-    M.rotate(time_elapsed * M_PI / 4, vec3(0, 1, 0));
+    if (!pause) {
+        M.rotate(time_elapsed * M_PI / 4, vec3(0, 1, 0));
+    }
+    V.popMatrix();
+    V.pushMatrix();
+    V.lookAt(vec3(0, 0, -cam_dist), vec3(0), vec3(0, 1, 0));
 
     glUniformMatrix4fv(prog.getUniformHandle("M"), 1, GL_FALSE, glm::value_ptr(M.topMatrix()));
     glUniformMatrix4fv(prog.getUniformHandle("V"), 1, GL_FALSE, glm::value_ptr(V.topMatrix()));
@@ -116,10 +131,16 @@ Voxel get_voxel(int x, int y, int z) {
 }
 
 double data_function(double x, double y, double z) {
-    return .003 * z*z - cos(.1*3.14*sqrt(x*x + y*y));
-    // return x*x + y*y + z*z - 2500;
-    // return cos(2 * 3.14*sqrt(x*x + y*y)) - z * 1;
-    // return -abs(10 - sqrt(x*x + y*y)) + 2;
+    switch (function) {
+    case 0:
+        return .003 * z*z - cos(.1*3.14*sqrt(x*x + y*y));
+    case 1:
+        return x*x + y*y + z*z - 2500;
+    case 2:
+        return -abs(10 - sqrt(x*x + y*y)) + 2;
+    case 3:
+        return max(max(abs(x), abs(y)), abs(z)) - 30;
+    }
 }
 
 void compute_values() {
@@ -315,13 +336,11 @@ void init() {
 
     prog = Program("./vert.glsl", "./frag.glsl");
     march();
-
     M = MatrixStack();
     M.pushMatrix();
 
     V = MatrixStack();
     V.pushMatrix();
-    V.lookAt(vec3(0, 0, -120), vec3(0), vec3(0, 1, 0));
 
     P = MatrixStack();
     P.pushMatrix();
@@ -405,11 +424,14 @@ void run() {
         glfwPollEvents();
         ImGui_ImplGlfwGL3_NewFrame();
 
-        ImGui::Begin("Set Iso Level");
-        ImGui::SliderFloat("Iso Level", &isovalue, MIN_ISO, MAX_ISO);
+        ImGui::Begin("Settings and Stuff");
+        ImGui::Combo("Function", &function, "ripples\0sphere\0cylinder\0cube");
+        ImGui::SliderFloat("Iso Level", &isovalue, min_max[function][0], min_max[function][1]);
         if (ImGui::Button("March")) {
             refresh();
         }
+        ImGui::SliderFloat("Camera Distance", &cam_dist, 0.0, 150.0);
+        ImGui::Checkbox("Pause", &pause);
         ImGui::End();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -430,6 +452,9 @@ void run() {
 
 int main(int argc, char** argv) {
     isovalue = 0;
+    function = 0;
+    pause = false;
+    cam_dist = 120;
     if (argc > 1) {
         isovalue = stod(argv[1]);
     }
