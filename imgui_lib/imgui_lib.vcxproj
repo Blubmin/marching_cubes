@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Glew_dynamic.2.0.0.0\build\native\Glew_dynamic.props" Condition="Exists('..\packages\Glew_dynamic.2.0.0.0\build\native\Glew_dynamic.props')" />
-  <Import Project="..\packages\GLMathematics.0.9.5.4\build\native\GLMathematics.props" Condition="Exists('..\packages\GLMathematics.0.9.5.4\build\native\GLMathematics.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B64A51BE-3DBC-4613-BEEB-DBC4B6139B86}</ProjectGuid>
-    <RootNamespace>marching_cubes</RootNamespace>
+    <ProjectGuid>{512314F3-1859-4AD2-9D54-CD2CDA7969D0}</ProjectGuid>
+    <RootNamespace>imgui_lib</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -33,7 +31,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -77,9 +75,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -87,9 +82,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -102,7 +94,6 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -116,47 +107,22 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="frag.glsl" />
-    <None Include="packages.config" />
-    <None Include="vert.glsl" />
+    <ClInclude Include="..\imgui\imconfig.h" />
+    <ClInclude Include="..\imgui\imgui.h" />
+    <ClInclude Include="..\imgui\imgui_internal.h" />
+    <ClInclude Include="..\imgui\stb_rect_pack.h" />
+    <ClInclude Include="..\imgui\stb_textedit.h" />
+    <ClInclude Include="..\imgui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GLSL.cpp" />
-    <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="MatrixStack.cpp" />
-    <ClCompile Include="Program.cpp" />
-    <ClCompile Include="tiny_obj_loader.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GLSL.h" />
-    <ClInclude Include="imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="LookupTables.h" />
-    <ClInclude Include="MatrixStack.h" />
-    <ClInclude Include="Program.h" />
-    <ClInclude Include="tiny_obj_loader.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\imgui_lib\imgui_lib.vcxproj">
-      <Project>{512314f3-1859-4ad2-9d54-cd2cda7969d0}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\imgui\imgui.cpp" />
+    <ClCompile Include="..\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\imgui\imgui_draw.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\glfw.redist.3.2.1\build\native\glfw.redist.targets" Condition="Exists('..\packages\glfw.redist.3.2.1\build\native\glfw.redist.targets')" />
-    <Import Project="..\packages\glfw.3.2.1\build\native\glfw.targets" Condition="Exists('..\packages\glfw.3.2.1\build\native\glfw.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\GLMathematics.0.9.5.4\build\native\GLMathematics.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GLMathematics.0.9.5.4\build\native\GLMathematics.props'))" />
-    <Error Condition="!Exists('..\packages\glfw.redist.3.2.1\build\native\glfw.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glfw.redist.3.2.1\build\native\glfw.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\glfw.3.2.1\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glfw.3.2.1\build\native\glfw.targets'))" />
-    <Error Condition="!Exists('..\packages\Glew_dynamic.2.0.0.0\build\native\Glew_dynamic.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Glew_dynamic.2.0.0.0\build\native\Glew_dynamic.props'))" />
-  </Target>
 </Project>
